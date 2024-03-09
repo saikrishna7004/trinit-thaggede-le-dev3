@@ -106,9 +106,9 @@ const Navbar = () => {
                                 <NavLink className="nav-link" href="/quiz">Quizzes</NavLink>
                             </li>
                             {session && session.user && <>
-                            {<li className="nav-item">
+                            {/* <li className="nav-item">
                                 <NavLink className="nav-link" href="/your-quiz">Your Quizzes</NavLink>
-                            </li>}
+                            </li> */}
                             <li className="nav-item">
                                 <NavLink className="nav-link" href="/results">Results</NavLink>
                             </li>

@@ -36,7 +36,7 @@ export default async function handler(req, res) {
             subjectAnswers.forEach(answer => {
                 if (answer.answer == question.answer) {
                     subjectPositiveScore += positiveMarks;
-                } else {
+                } else if (answer.answer != '-1') {
                     subjectNegativeScore += negativeMarks;
                 }
             });

@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/react';
+import Link from 'next/link';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
 const ResultsPage = () => {
     const router = useRouter();
@@ -44,9 +47,12 @@ const ResultsPage = () => {
         return <div>{error}</div>;
     }
 
+    console.log(router)
+
     return (
-        <div className='container'>
+        <div className='container my-4'>
             <h1>Exam Results</h1>
+            <Link className='btn btn-outline-primary rounded-0 mt-4' href={`/results`}><FontAwesomeIcon icon={faArrowLeft} /> Go Back</Link>
             <table className='table table-striped my-4'>
                 <thead>
                     <tr>
@@ -72,6 +78,7 @@ const ResultsPage = () => {
                 <strong>Total Negative Marks:</strong> {resultData && resultData.totalNegativeMarks}<br />
                 <strong>Overall Total Score:</strong> {resultData && resultData.overallTotalScore}
             </div>
+            <Link href={router.asPath + '/analysis'} className='btn btn-primary my-4'>Show Analysis</Link>
         </div>
     );
 };

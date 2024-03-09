@@ -13,6 +13,7 @@ const New = () => {
     const [uploading, setUploading] = useState(false);
     const { data: session, status } = useSession();
     const [visibility, setVisibility] = useState('public');
+    const [submitting, setSubmitting] = useState(false);
 
     const handleFileChange = (event) => {
         setFile(event.target.files[0]);
@@ -70,6 +71,7 @@ const New = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setSubmitting(true);
         console.log(subjects)
         const examData = {
             title: examName,
@@ -107,6 +109,8 @@ const New = () => {
             }
         } catch (error) {
             console.error('Error saving exam:', error);
+        } finally {
+            setSubmitting(false);
         }
     };
 
@@ -260,7 +264,7 @@ const New = () => {
                     </div>
                 ))}
                 <button className='btn btn-primary mb-4 mx-2' onClick={addSubject}>+ Add Subject</button>
-                <button className='btn btn-primary mb-4 mx-2' onClick={handleSubmit}>Submit</button>
+                <button className='btn btn-primary mb-4 mx-2' onClick={handleSubmit} disabled={submitting}>Submit{submitting && 'ting...'}</button>
             </div>
         </div>
     );

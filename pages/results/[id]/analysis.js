@@ -165,7 +165,8 @@ const UserExamDetailsPage = () => {
                 throw new Error('Failed to submit feedback');
             }
 
-            const data = await response.text();
+            const data = await response.json();
+            console.log(data)
 
             Swal.fire({
                 title: 'Feedback Received',

@@ -29,6 +29,8 @@ const questionSchema = new Schema({
         type: Number,
         default: -1
     }
+}, {
+    timestamps: true
 });
 
 const Question = models.Question || model('Question', questionSchema);

@@ -1,7 +1,7 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import ExamCard from '../components/ExamCard';
+import ExamCard from '../../components/ExamCard';
 import Head from 'next/head';
 
 const ExamPage = () => {
@@ -34,6 +34,8 @@ const ExamPage = () => {
     }, [session]);
 
     if (status == 'loading') return <p>Loading...</p>;
+    
+    if (status != 'loading' && (!session || !session.user)) router.push('/login?next=/quiz');
 
     return (
         <div>

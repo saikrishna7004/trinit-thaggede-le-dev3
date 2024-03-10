@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import MainExam from '../../components/MainExam';
 import { useRouter } from 'next/router';
+import { useSession } from 'next-auth/react';
 
 const ExamPage = ({ params }) => {
     const [agree, setAgree] = useState(false);
@@ -10,6 +11,7 @@ const ExamPage = ({ params }) => {
     const [examId, setExamId] = useState('')
     const [exam, setExam] = useState(null);
     const [timer, setTimer] = useState(null);
+    const { data: session, status } = useSession();
 
     const router = useRouter()
 
@@ -77,6 +79,8 @@ const ExamPage = ({ params }) => {
     const handlePreviousPage = () => {
         setCurrentPage(currentPage - 1);
     };
+
+    if (status != 'loading' && (!session || !session.user)) return <p>Unauthorized</p>;
 
     return (
         <div className="container-fluid my-3 alldiv">

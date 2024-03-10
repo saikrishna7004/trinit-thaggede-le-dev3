@@ -18,9 +18,10 @@ export default async function handler(req, res) {
                 { status: 'public' },
                 { $and: [{ status: 'private' }, { user: userId }] }
             ]
-        });        
+        })
+        .populate('user', 'firstName lastName').select('-questions').lean();
 
-        console.log(exams)
+        // console.log(exams)
 
         res.status(200).json(exams);
     } catch (error) {

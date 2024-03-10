@@ -4,8 +4,6 @@ import { useEffect, useRef, useState } from 'react';
 import NavLink from './navlink';
 import { signOut, useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faSearch } from '@fortawesome/free-solid-svg-icons';
 
 
 const Navbar = () => {

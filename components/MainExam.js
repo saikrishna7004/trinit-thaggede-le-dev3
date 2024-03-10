@@ -112,6 +112,17 @@ const MainExam = ({ questions, quizId, exam, timer }) => {
     };
 
     const handleQuestionButtonClick = (questionIndex) => {
+        if (questionStartTime) {
+            const timeTaken = Math.floor((Date.now() - questionStartTime) / 1000);
+            const updatedAnswers = {
+                ...answers,
+                [questionsData[currentPage].id]: { ...answers[questionsData[currentPage].id], timetaken: answers[questionsData[currentPage].id].timetaken + timeTaken }
+            };
+            setAnswers(updatedAnswers);
+        }
+    
+        setQuestionStartTime(Date.now());
+
         const subjectIndex = Object.values(subjectCount).findIndex(subject => questionIndex >= subject.firstIndex && questionIndex < subject.firstIndex + subject.length);
         setCurrentSubjectIndex(subjectIndex);
         setCurrentPage(questionIndex);

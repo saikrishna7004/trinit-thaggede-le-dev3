@@ -14,7 +14,12 @@ const ExamPage = () => {
     useEffect(() => {
         const fetchExams = async () => {
             try {
-                const response = await fetch('/api/fetchExams');
+                let url = '/api/fetchExams';
+                if (session && session.user) {
+                    console.log(session.user)
+                    url += `?userId=${session.user._id}`;
+                }
+                const response = await fetch(url);
                 if (response.ok) {
                     const examsData = await response.json();
                     setExams(examsData);
@@ -34,10 +39,10 @@ const ExamPage = () => {
     return (
         <div>
             <Head>
-                <title>Attempt Quiz</title>
+                <title>Quiz Results</title>
             </Head>
             <div className="container my-3">
-                <h1>Select an exam to attempt</h1>
+                <h1>Select an exam to show results</h1>
             </div>
 
             <div className="container border p-0">

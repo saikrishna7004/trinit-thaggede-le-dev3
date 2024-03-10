@@ -1,4 +1,4 @@
-import { faClock } from '@fortawesome/free-solid-svg-icons';
+import { faClock, faInfo, faInfoCircle, faPerson, faShare, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -18,7 +18,7 @@ const ExamCard = ({ exam, results }) => {
     form.setAttribute("method", "post");
     form.setAttribute("action", winURL);
     form.setAttribute("target", winName);
-    
+
     for (const key in params) {
       if (params.hasOwnProperty(key)) {
         const input = document.createElement('input');
@@ -36,14 +36,43 @@ const ExamCard = ({ exam, results }) => {
     form.reset();
   };
 
+  const formatDate = (date) => {
+    const options = { month: 'short', year: 'numeric' };
+    return new Date(date).toLocaleDateString('en-US', options);
+  };
+
+  const shareLink = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: 'Check out this exam',
+          text: `Check out this exam: ${exam.title}`,
+          url: `${window.location.origin}/exam/${exam._id}`
+        });
+      } else {
+        throw new Error('Web Share API not supported');
+      }
+    } catch (error) {
+      console.error('Sharing failed:', error);
+      try {
+        await navigator.clipboard.writeText(`${window.location.origin}/${exam._id}/`);
+        alert('Link copied to clipboard!');
+      } catch (clipboardError) {
+        console.error('Copying to clipboard failed:', clipboardError);
+        alert('Sharing failed. Please copy the link manually.');
+      }
+    }
+  };
+
+
   return (
     <div className="box-card" style={{ borderRadius: 0 }}>
       <div className="row">
         <div className="col-md-2 col-sm-3 col-xs-4">
           <div className="box-date text-center" style={{ borderRadius: 0 }}>
             <ul>
-              <li className="t-date"><span> 17 </span></li>
-              <li className="t-month"><span> JAN 2023 </span></li>
+              <li className="t-date"><span>{new Date(exam.createdAt).getDate()}</span></li>
+              <li className="t-month"><span>{formatDate(exam.createdAt)}</span></li>
             </ul>
           </div>
         </div>
@@ -59,13 +88,13 @@ const ExamCard = ({ exam, results }) => {
               </li>
               <li className="t-time">
                 <span style={{ color: "green" }}>
-                  <FontAwesomeIcon icon={faClock} />
-                  <span>&nbsp;{exam.startTime} -&nbsp; </span>
+                  <FontAwesomeIcon icon={faUser} />
+                  <b>&nbsp;{exam.user.firstName} {exam.user.lastName} </b>
                 </span>
-                <span style={{ color: "red" }}>
+                {/* <span style={{ color: "red" }}>
                   <FontAwesomeIcon icon={faClock} />
                   <span style={{ color: "red" }}> {exam.endTime} </span>
-                </span>
+                </span> */}
               </li>
             </ul>
           </div>
@@ -74,8 +103,14 @@ const ExamCard = ({ exam, results }) => {
           <div className="box-button">
             {!results ? <button type="button" className="btn-guest pull-right" style={{ borderRadius: 0 }} onClick={takeExam}>
               TAKE EXAM
-            </button> : 
-            <Link href={'/results/' + exam._id} className='btn-guest pull-right' style={{ borderRadius: 0 }}>Results</Link>}
+            </button> :
+              <Link href={'/results/' + exam._id} className='btn-guest pull-right' style={{ borderRadius: 0 }}>Results</Link>}
+            <Link type="button" className="btn-guest pull-right" style={{ borderRadius: 0, marginRight: '10px', textDecoration: 'none' }} href={'/quiz/' + exam._id}>
+              <FontAwesomeIcon icon={faInfoCircle} /> Details
+            </Link>
+            <button type="button" className="btn-guest pull-right" style={{ borderRadius: 0, marginRight: '10px' }} onClick={shareLink}>
+              <FontAwesomeIcon icon={faShare} /> Share
+            </button>
           </div>
         </div>
       </div>

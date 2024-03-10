@@ -28,7 +28,11 @@ const userSchema = new Schema({
         required: true,
         enum: ['admin', 'student'],
         default: 'student'
-    }
+    },
+    upvotes: [{
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    }]
 }, {
     timestamps: true
 });

@@ -6,6 +6,7 @@ import DoughnutChartComponent from '../../../components/DoughnutChartComponent '
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import Swal from 'sweetalert2';
 
 const UserExamDetailsPage = () => {
     const router = useRouter();
@@ -40,7 +41,6 @@ const UserExamDetailsPage = () => {
                     marksData[subject] = totalMarks;
                     timeTakenData[subject] = totalTimeTaken;
                 });
-                console.log(marksData)
                 setMarksData(marksData);
                 setTimeTakenData(timeTakenData);
             } catch (error) {
@@ -142,11 +142,51 @@ const UserExamDetailsPage = () => {
         }
     };
 
+    const handleFeedback = async () => {
+        try {
+            const swalLoading = Swal.fire({
+                title: 'Loading...',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                willOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            const response = await fetch(`/api/feedback`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(examData)
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to submit feedback');
+            }
+
+            const data = await response.text();
+
+            Swal.fire({
+                title: 'Feedback Received',
+                text: data.message,
+                icon: 'success'
+            });
+        } catch (error) {
+            Swal.fire({
+                title: 'Error',
+                text: error.message,
+                icon: 'error'
+            });
+        }
+    };
+
     return (
         <div className='container my-4'>
             <h1>User Exam Details</h1>
             <Link className='btn btn-outline-primary rounded-0 mt-4' href={`/results/${id}`}><FontAwesomeIcon icon={faArrowLeft} /> Go Back</Link>
             <DoughnutChartComponent marksData={marksData} timeTakenData={timeTakenData} />
+            <button className="btn btn-primary" onClick={handleFeedback}>Show Overall Feedback</button>
             <h2 className='my-3'>Time Spent Analysis</h2>
             <canvas id="examChart" style={{ width: '600px !important' }}></canvas>
             <div className="questions">

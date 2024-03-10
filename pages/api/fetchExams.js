@@ -13,12 +13,7 @@ export default async function handler(req, res) {
         const userId = req.query.userId;
         console.log(userId)
 
-        const exams = await Exam.find({
-            $or: [
-                { status: 'public' },
-                { $and: [{ status: 'private' }, { user: userId }] }
-            ]
-        })
+        const exams = await Exam.find({})
         .populate('user', 'firstName lastName').select('-questions').lean();
 
         // console.log(exams)

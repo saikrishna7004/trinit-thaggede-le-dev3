@@ -7,20 +7,35 @@ import Head from 'next/head';
 const ExamPage = () => {
     const { data: session, status } = useSession();
     const router = useRouter();
+    const [publicExams, setPublicExams] = useState([]);
+    const [privateExams, setPrivateExams] = useState([]);
+    const [allExams, setAllExams] = useState([]);
     const [exams, setExams] = useState([]);
+    const [activeTab, setActiveTab] = useState('all');
+
+    useEffect(() => {
+        console.log(allExams)
+        console.log(publicExams)
+        console.log(privateExams)
+    }, [allExams])
+    
 
     const fetchExams = async () => {
         try {
-            let url = '/api/fetchExams';
-            if (session && session.user) {
-                console.log(session.user)
+            let url = '/api/fetchExams'
+            if (session && session?.user) {
                 url += `?userId=${session.user._id}`;
             }
-            const response = await fetch(url);
+            const response = await fetch(url)
             if (response.ok) {
                 const examsData = await response.json();
-                console.log(examsData)
-                setExams(examsData);
+                const publicExamsData = examsData.filter(exam => exam.status == 'public');
+                const publicExamsDataUser = examsData.filter(exam => exam.status == 'public' && exam.user._id == session.user._id);
+                const privateExamsData = examsData.filter(exam => exam.status == 'private' && exam.user._id == session.user._id);
+                setPublicExams(publicExamsDataUser);
+                setPrivateExams(privateExamsData);
+                setAllExams([...publicExamsData, ...privateExams]);
+                setExams([...publicExamsData, ...privateExams]);
             } else {
                 throw new Error('Failed to fetch exams');
             }
@@ -30,12 +45,29 @@ const ExamPage = () => {
     };
 
     useEffect(() => {
-        if(status != 'loading') fetchExams();
-    }, [session]);
+        if (status != 'loading') {
+            fetchExams();
+        }
+    }, [session, status]);
 
-    if (status == 'loading') return <p>Loading...</p>;
+    const handleTabChange = (tab) => {
+        setActiveTab(tab);
+        switch (tab) {
+            case 'public':
+                setExams(publicExams);
+                break;
+            case 'private':
+                setExams(privateExams);
+                break;
+            default:
+                setExams(allExams);
+                break;
+        }
+    };
+
+    if (status === 'loading') return <p>Loading...</p>;
     
-    if (status != 'loading' && (!session || !session.user)) router.push('/login?next=/quiz');
+    if (!session || !session.user) router.push('/login?next=/quiz');
 
     return (
         <div>
@@ -50,10 +82,33 @@ const ExamPage = () => {
                 <div className="card-header">
                     <ul className="nav nav-tabs">
                         <li className="nav-item">
-                            <a className="nav-link active" aria-current="true" href="#">Active</a>
+                            <button 
+                                className={`nav-link ${activeTab === 'all' ? 'active' : ''}`} 
+                                onClick={() => handleTabChange('all')}
+                            >
+                                All
+                            </button>
                         </li>
                         <li className="nav-item">
-                            <button className="nav-link" href="#" onClick={fetchExams}>Refresh</button>
+                            <button 
+                                className={`nav-link ${activeTab === 'public' ? 'active' : ''}`} 
+                                onClick={() => handleTabChange('public')}
+                            >
+                                Public
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button 
+                                className={`nav-link ${activeTab === 'private' ? 'active' : ''}`} 
+                                onClick={() => handleTabChange('private')}
+                            >
+                                Private
+                            </button>
+                        </li>
+                        <li className="nav-item">
+                            <button className="nav-link" onClick={fetchExams}>
+                                Refresh
+                            </button>
                         </li>
                     </ul>
                 </div>
